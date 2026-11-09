@@ -22,10 +22,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
-import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import git.artdeell.mojo.R;
 import git.artdeell.mojo.Tools;
@@ -62,8 +62,7 @@ public class InstanceEditorFragment extends Fragment implements CropperUtils.Cro
     private TextView mDefaultVersion, mDefaultControl;
     private ImageView mInstanceIcon;
     private CheckBox mSharedDataCheckbox;
-    private SwitchCompat mUseAngleSwitch;
-    private View mUseAngleRow;
+    private MaterialSwitch mUseAngleSwitch;
     private int mRecommendedIconSize;
     /** Name of the static icon picked in the icon dialog, applied on save. Null when none was picked */
     private String mPendingStaticIcon;
@@ -137,8 +136,6 @@ public class InstanceEditorFragment extends Fragment implements CropperUtils.Cro
             if(checked) text = R.string.instance_shared_data_on;
             mSharedDataCheckbox.setText(text);
         });
-
-        view.findViewById(R.id.vprof_editor_instance_angle_label).setOnClickListener(v -> mUseAngleSwitch.toggle());
 
         Instance selectedInstance = Instances.loadSelectedInstance();
         Context context = view.getContext();
@@ -257,7 +254,7 @@ public class InstanceEditorFragment extends Fragment implements CropperUtils.Cro
         // It is independent from the global ANGLE setting and starts out disabled.
         boolean angleAvailable = LauncherPreferences.PREF_USE_SYSTEM_ANGLE
                 || new GLESProvider.ExternalAngleProvider(context).supported();
-        mUseAngleRow.setVisibility(angleAvailable ? View.VISIBLE : View.GONE);
+        mUseAngleSwitch.setVisibility(angleAvailable ? View.VISIBLE : View.GONE);
         // The listener is attached after the initial state is set, so loading the values does not store an override
         mUseAngleSwitch.setOnCheckedChangeListener(null);
         mUseAngleSwitch.setChecked(instance.shouldUseAngle());
@@ -287,7 +284,6 @@ public class InstanceEditorFragment extends Fragment implements CropperUtils.Cro
         mVersionSelectButton = view.findViewById(R.id.vprof_editor_version_button);
         mInstanceIcon = view.findViewById(R.id.vprof_editor_instance_icon);
         mSharedDataCheckbox = view.findViewById(R.id.vprof_editor_data_checkbox_container);
-        mUseAngleRow = view.findViewById(R.id.vprof_editor_instance_angle_row);
         mUseAngleSwitch = view.findViewById(R.id.vprof_editor_instance_angle);
     }
 

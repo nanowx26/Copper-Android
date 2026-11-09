@@ -111,7 +111,8 @@ public class Instance extends DisplayInstance {
 
     /**
      * Whether ANGLE should be used as the OpenGL ES driver for this instance.
-     * Independent from the global ANGLE preferences, off until the instance switch is enabled.
+     * The instance switch is the master toggle: if it is off, no ANGLE is used at all,
+     * whatever the video settings say. Off until the user enables it.
      * @return true if ANGLE is requested for this instance
      */
     public boolean shouldUseAngle() {
@@ -119,9 +120,13 @@ public class Instance extends DisplayInstance {
     }
 
     /**
-     * Whether the system ANGLE should be preferred over the external one for this instance.
+     * Which ANGLE flavour the instance switch selects, based on the video settings:
+     * <ul>
+     *   <li>"Use system ANGLE" enabled: the system ANGLE is used</li>
+     *   <li>only "Use ANGLE" enabled, or neither of them enabled: the external ANGLE is used</li>
+     * </ul>
      * Only applies if ANGLE is requested for this instance at all.
-     * @return true if system ANGLE is requested for this instance
+     * @return true if the system ANGLE should be used for this instance
      */
     public boolean shouldUseSystemAngle() {
         return shouldUseAngle() && LauncherPreferences.PREF_USE_SYSTEM_ANGLE;
