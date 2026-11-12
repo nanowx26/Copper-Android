@@ -252,7 +252,9 @@ public class GameRunner {
         OldVersionsUtils.selectOpenGlVersion(versionInfo);
 
         ArrayList<String> launchClassPath = new ArrayList<>(classpath.length + 1);
-        classpath = prependFileDialogBridge(activity, classpath);
+        if(versionInfo.mainClass == null || !versionInfo.mainClass.contains("bootstraplauncher")) {
+            classpath = prependFileDialogBridge(activity, classpath);
+        }
         for(int i = 0; i < classpath.length; i++) {
             File classpathEntry = classpath[i];
             String entryPath = classpathEntry.getAbsolutePath();
