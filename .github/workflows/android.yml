@@ -1,3 +1,4 @@
+
 name: Android CI
 
 on:
@@ -16,9 +17,10 @@ jobs:
       UPLOAD_KEYSTORE_PASSWORD: ${{ secrets.UPLOAD_NEXT_KEYSTORE_PASSWORD }}
       MOJOPUB_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_NEXT_KEYSTORE_PASSWORD }}
       CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -47,21 +49,42 @@ jobs:
           gradle-version: "8.14.5"
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
+
       - name: Create out directory
-        run: mkdir out
-      # Release APKs are built on every branch of the main repo (not for pull requests, they don't get secrets)
-      - name: Decode release keystore
-        if: github.repository_owner == 'CopperLauncher' && github.event_name != 'pull_request'
+        run: mkdir -p out
+
+      # Prepare release signing
+      - name: Prepare Release Keystore
+        if: github.event_name != 'pull_request'
+        env:
+          RELEASE_KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_NEXT_KEYSTORE_PASSWORD }}
         run: |
-          if [ -n "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" ]; then
-            echo "${{ secrets.RELEASE_KEYSTORE_BASE64 }}" | base64 -d > app_mojo/mojo_release_next.jks
+          if [ -n "$RELEASE_KEYSTORE_BASE64" ] && [ -n "$RELEASE_KEYSTORE_PASSWORD" ]; then
+            echo "$RELEASE_KEYSTORE_BASE64" | base64 -d > app_mojo/mojo_release_next.jks
+            echo "Using configured release keystore."
+          else
+            PASSWORD=$(openssl rand -hex 16)
+
+            keytool -genkeypair -v \
+              -keystore app_mojo/mojo_release_next.jks \
+              -storepass "$PASSWORD" \
+              -keypass "$PASSWORD" \
+              -alias key0 \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=CI Build,O=Android,C=US"
+
+            echo "MOJOPUB_KEYSTORE_PASSWORD=$PASSWORD" >> "$GITHUB_ENV"
+            echo "Generated temporary release keystore."
           fi
 
-      # The Google Play upload key is only needed where the .aab is published
+      # Google Play signing
       - name: Decode upload keystore
         if: github.repository_owner == 'CopperLauncher' && (github.ref == 'refs/heads/v3_openjdk' || startsWith(github.ref, 'refs/tags/v'))
         run: |
@@ -75,44 +98,63 @@ jobs:
           gradle :app_mojo:bundleFullGplay
           mv app_mojo/build/outputs/bundle/fullGplay/app_mojo-full-gplay.aab out/app-gplay.aab
 
-      - name: Build Debug .apk
+      # DEBUG BUILDS
+
+      - name: Build Debug Full APK
         run: |
-          # Build the launcher
           gradle :app_mojo:assembleFullDebug
           mv app_mojo/build/outputs/apk/full/debug/app_mojo-full-debug.apk out/app-debug-full.apk
 
-      - name: Build Debug .apk (No runtime)
+      - name: Build Debug No Runtime APK
         run: |
           gradle :app_mojo:assembleNoruntimeDebug
           mv app_mojo/build/outputs/apk/noruntime/debug/app_mojo-noruntime-debug.apk out/app-debug-noruntime.apk
-      - name: Build Release .apk
-        if: github.repository_owner == 'CopperLauncher' && github.event_name != 'pull_request'
+
+      # RELEASE BUILD
+      # Now available on forks too.
+
+      - name: Build Release APK
+        if: github.event_name != 'pull_request'
         run: |
           gradle :app_mojo:assembleFullPubRelease
           mv app_mojo/build/outputs/apk/full/pubRelease/app_mojo-full-pubRelease.apk out/Copper-release.apk
-      - name: Gen md5sums
+
+      # CHECKSUMS
+
+      - name: Generate MD5 Checksums
         run: |
           md5sum out/app-debug-full.apk > out/app-debug-full.md5
           md5sum out/app-debug-noruntime.apk > out/app-debug-noruntime.md5
+          if [ -f out/Copper-release.apk ]; then
+            md5sum out/Copper-release.apk > out/Copper-release.md5
+          fi
 
-      - name: Upload Debug APK
+      # ARTIFACTS
+
+      - name: Upload Debug Full APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: out/app-debug-full.apk
+          path: |
+            out/app-debug-full.apk
+            out/app-debug-full.md5
 
-      - name: Upload Debug APK (No runtime)
+      - name: Upload Debug No Runtime APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-noruntime
-          path: out/app-debug-noruntime.apk
+          path: |
+            out/app-debug-noruntime.apk
+            out/app-debug-noruntime.md5
 
       - name: Upload Release APK
-        if: github.repository_owner == 'CopperLauncher' && github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: out/Copper-release.apk
+          path: |
+            out/Copper-release.apk
+            out/Copper-release.md5
 
       - name: Upload AAB
         if: github.repository_owner == 'CopperLauncher' && (github.ref == 'refs/heads/v3_openjdk' || startsWith(github.ref, 'refs/tags/v'))
@@ -121,7 +163,8 @@ jobs:
           name: app-release-aab
           path: out/app-gplay.aab
 
-      # Only v3_openjdk publishes the nightly release, other branches just upload the APK as an artifact
+      # ORIGINAL NIGHTLY RELEASE
+
       - name: Release Nightly APK
         if: github.repository_owner == 'CopperLauncher' && github.ref == 'refs/heads/v3_openjdk'
         uses: softprops/action-gh-release@v3
@@ -134,6 +177,8 @@ jobs:
             Commit hash: ${{ github.sha }}
           files: |
             out/Copper-release.apk
+
+      # GOOGLE PLAY
 
       - name: Upload onto the Google Play testing track
         continue-on-error: true
