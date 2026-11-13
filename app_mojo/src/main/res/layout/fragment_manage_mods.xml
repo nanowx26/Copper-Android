@@ -82,6 +82,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- Search installed content -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/manage_mods_search_layout"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/fragment_padding_medium"
+        android:layout_marginTop="@dimen/padding_medium"
+        android:hint="@string/manage_content_search_hint"
+        app:startIconDrawable="@drawable/ic_search"
+        app:endIconMode="clear_text">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/manage_mods_search_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
     <!-- Mod list -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/manage_mods_recycler"

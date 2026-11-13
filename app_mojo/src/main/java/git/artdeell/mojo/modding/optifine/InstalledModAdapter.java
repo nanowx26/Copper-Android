@@ -67,6 +67,10 @@ public class InstalledModAdapter extends RecyclerView.Adapter<InstalledModAdapte
     }
 
     private final List<ModEntry> mMods = new ArrayList<>();
+    // Full, unfiltered content list. mMods holds only the rows matching the
+    // current search query (all of them when the query is empty).
+    private final List<ModEntry> mAllMods = new ArrayList<>();
+    private String mNameQuery = "";
     private final EmptyStateListener mEmptyListener;
     private final Handler mMainHandler = new Handler(Looper.getMainLooper());
 
@@ -139,16 +143,42 @@ public class InstalledModAdapter extends RecyclerView.Adapter<InstalledModAdapte
                     (f.getName().endsWith(ext) || f.getName().endsWith(ext + ".disabled")));
             if (files != null) {
                 Arrays.sort(files, (a, b) -> a.getName().compareToIgnoreCase(b.getName()));
-                for (File f : files) mMods.add(new ModEntry(f));
+                for (File f : files) {
+                    ModEntry entry = new ModEntry(f);
+                    mAllMods.add(entry);
+                    mMods.add(entry);
+                }
             }
         }
         notifyEmptyState();
     }
 
     /** Called by ManageModsFragment to inject the saved per-instance filter. */
+    /** Called by ManageModsFragment to inject the saved per-instance filter. */
     public void setFilter(String mcVersion, String loader) {
         mFilterMcVersion = mcVersion != null ? mcVersion : "";
         mFilterLoader    = loader    != null ? loader    : "";
+    }
+
+    /**
+     * Filters the visible rows by a case-insensitive substring of the content's
+     * display name or file name. An empty/null query shows everything.
+     */
+    @SuppressLint("NotifyDataSetChanged")
+    public void setNameQuery(String query) {
+        mNameQuery = query == null ? "" : query.trim().toLowerCase(java.util.Locale.ROOT);
+        mMods.clear();
+        for (ModEntry entry : mAllMods) {
+            if (matchesQuery(entry)) mMods.add(entry);
+        }
+        notifyDataSetChanged();
+        notifyEmptyState();
+    }
+
+    private boolean matchesQuery(ModEntry entry) {
+        if (mNameQuery.isEmpty()) return true;
+        return entry.displayName().toLowerCase(java.util.Locale.ROOT).contains(mNameQuery)
+                || entry.file.getName().toLowerCase(java.util.Locale.ROOT).contains(mNameQuery);
     }
 
     /**
@@ -158,13 +188,21 @@ public class InstalledModAdapter extends RecyclerView.Adapter<InstalledModAdapte
      */
     public void addContentFile(File f) {
         ModEntry entry = new ModEntry(f);
-        int index = 0;
-        while (index < mMods.size() &&
-                mMods.get(index).file.getName().compareToIgnoreCase(f.getName()) < 0) {
-            index++;
+        int allIndex = 0;
+        while (allIndex < mAllMods.size() &&
+                mAllMods.get(allIndex).file.getName().compareToIgnoreCase(f.getName()) < 0) {
+            allIndex++;
         }
-        mMods.add(index, entry);
-        notifyItemInserted(index);
+        mAllMods.add(allIndex, entry);
+        if (matchesQuery(entry)) {
+            int index = 0;
+            while (index < mMods.size() &&
+                    mMods.get(index).file.getName().compareToIgnoreCase(f.getName()) < 0) {
+                index++;
+            }
+            mMods.add(index, entry);
+            notifyItemInserted(index);
+        }
         notifyEmptyState();
     }
 
@@ -934,6 +972,7 @@ public class InstalledModAdapter extends RecyclerView.Adapter<InstalledModAdapte
                             entry.file.delete();
                             int p = getAdapterPosition();
                             if (p != RecyclerView.NO_POSITION) {
+                                mAllMods.remove(entry);
                                 mMods.remove(p);
                                 notifyItemRemoved(p);
                                 notifyEmptyState();

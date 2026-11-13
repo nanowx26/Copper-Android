@@ -19,6 +19,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
 
 import git.artdeell.mojo.MojoApplication;
 import git.artdeell.mojo.R;
@@ -108,7 +111,8 @@ public class ManageModsFragment extends Fragment {
         ImageButton importButton = view.findViewById(R.id.manage_mods_import);
         TextView    title      = view.findViewById(R.id.manage_mods_title);
         RecyclerView recycler  = view.findViewById(R.id.manage_mods_recycler);
-        View        emptyState = view.findViewById(R.id.manage_mods_empty);
+        TextView    emptyState = view.findViewById(R.id.manage_mods_empty);
+        EditText    searchInput = view.findViewById(R.id.manage_mods_search_input);
 
         // In landscape this screen is docked in MainMenuFragment's right pane, and the
         // content picker's own back button (left pane) already covers "leave this
@@ -128,9 +132,7 @@ public class ManageModsFragment extends Fragment {
         String typeLabel = getString(contentTypeLabelRes());
         title.setText(profileName.isEmpty() ? typeLabel : profileName + " - " + typeLabel);
 
-        if (emptyState instanceof TextView) {
-            ((TextView) emptyState).setText(contentTypeEmptyLabelRes());
-        }
+        emptyState.setText(contentTypeEmptyLabelRes());
 
         // Build adapter, inject saved (or instance-detected) filter
         String profileKey = getCurrentProfileKey();
@@ -141,11 +143,25 @@ public class ManageModsFragment extends Fragment {
         mAdapter = new InstalledModAdapter(requireContext(), getContentDir(), mContentType, isEmpty -> {
             recycler.setVisibility(isEmpty ? View.GONE  : View.VISIBLE);
             emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+            if (isEmpty) {
+                boolean searching = searchInput.getText().toString().trim().length() > 0;
+                emptyState.setText(searching
+                        ? R.string.manage_content_search_no_results
+                        : contentTypeEmptyLabelRes());
+            }
         });
         mAdapter.setFilter(savedVersion, savedLoader);
 
         recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         recycler.setAdapter(mAdapter);
+
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(Editable s) {
+                if (mAdapter != null) mAdapter.setNameQuery(s.toString());
+            }
+        });
 
         // Auto-check for updates as soon as the screen opens, in addition to
         // the manual refresh button. Silent (no "checking…" toast, and no

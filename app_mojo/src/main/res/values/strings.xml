@@ -25,6 +25,10 @@
     <string name="error_no_version">No version!</string>
     <string name="error_show_more">Show more</string>
     <string name="error_show_less">Show less</string>
+    
+    <!-- Search -->
+    <string name="manage_content_search_hint">Search installed content</string>
+    <string name="manage_content_search_no_results">No matching content found</string>
 
     <!-- Toast messages -->
     <string name="toast_permission_denied">The read/write to storage permission is required!</string>
