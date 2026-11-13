@@ -1,6 +1,5 @@
 package git.artdeell.mojo.game;
 
-
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import static git.artdeell.mojo.Tools.dialogForceClose;
 import static git.artdeell.mojo.game.platform.Platform.PLATFORM;
@@ -197,8 +196,11 @@ public class GameActivity extends BaseActivity implements ControlButtonMenuListe
             return insets;
         });
 
-        ingameControlsEditorArrayAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.menu_customcontrol));
+        ingameControlsEditorArrayAdapter = new GameDrawerAdapter(this,
+                getResources().getStringArray(R.array.menu_customcontrol),
+                new int[]{R.drawable.ic_add, R.drawable.ic_folder, R.drawable.ic_drawer_gamepad,
+                        R.drawable.ic_folder, R.drawable.ic_drawer_save, R.drawable.ic_swap_horiz,
+                        R.drawable.ic_arrow_back_white});
         ingameControlsEditorListener = (parent, view, position, id) -> {
             switch(position) {
                 case 0: mControlLayout.addControlButton(new ControlData("New")); break;
@@ -252,8 +254,11 @@ public class GameActivity extends BaseActivity implements ControlButtonMenuListe
             setTitle("MojoLauncher (" + version + ")");
 
             // Menu
-            gameActionArrayAdapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_list_item_1, getResources().getStringArray(R.array.menu_ingame));
+            gameActionArrayAdapter = new GameDrawerAdapter(this,
+                    getResources().getStringArray(R.array.menu_ingame),
+                    new int[]{R.drawable.ic_drawer_power, R.drawable.ic_drawer_log,
+                            R.drawable.ic_drawer_keyboard, R.drawable.ic_settings,
+                            R.drawable.ic_drawer_gamepad});
             gameActionClickListener = (parent, view, position, id) -> {
                 switch(position) {
                      case 0: dialogForceClose(GameActivity.this); break;
@@ -498,7 +503,6 @@ public class GameActivity extends BaseActivity implements ControlButtonMenuListe
                 cursorView.setVisibility(View.GONE);
                 break;
         }
-
         if(toastString != 0) Toast.makeText(ctx, toastString, Toast.LENGTH_SHORT).show();
     }
 
@@ -593,8 +597,7 @@ public class GameActivity extends BaseActivity implements ControlButtonMenuListe
         int eventSource = event.getSource();
         // On my device, the mouse sends events as a relative mouse device.
         // Not comparing with == here because apparently `eventSource` is a mask that can
-        // sometimes indicate multiple sources, like in the case of InputDevice.SOURCE_TOUCHPAD
-        // (which is *also* an InputDevice.SOURCE_MOUSE when controlling a cursor)
+        // sometimes indicate multiple different sources (e.g. a touchpad that is also a mouse)
         return (eventSource & InputDevice.SOURCE_MOUSE_RELATIVE) != 0 ||
                 (eventSource & InputDevice.SOURCE_MOUSE) != 0;
     }

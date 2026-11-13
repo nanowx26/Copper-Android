@@ -33,10 +33,12 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentManager;
+import android.content.pm.ActivityInfo;
 
 import com.kdt.mcgui.LauncherWallpaperView;
 import com.kdt.mcgui.ProgressLayout;
 
+import git.artdeell.mojo.utils.progress.ProgressCenter;
 import git.artdeell.mojo.authenticator.accounts.Accounts;
 import git.artdeell.mojo.extra.ExtraConstants;
 import git.artdeell.mojo.extra.ExtraCore;
@@ -63,6 +65,7 @@ import git.artdeell.mojo.tasks.mojson.MoJsonDownloader;
 import git.artdeell.mojo.utils.LauncherBackground;
 import git.artdeell.mojo.utils.NotificationUtils;
 import git.artdeell.mojo.utils.ThemeColors;
+import git.artdeell.mojo.utils.ThemeManager;
 
 public class LauncherActivity extends BaseActivity {
     public static final String SETTING_FRAGMENT_TAG = "SETTINGS_FRAGMENT";
@@ -71,7 +74,8 @@ public class LauncherActivity extends BaseActivity {
     private FragmentContainerView mFragmentView;
     private ImageButton mSettingsButton;
     private LauncherWallpaperView mWallpaper;
-    private ProgressLayout mProgressLayout;
+    private ProgressCenter mProgressCenter;
+    private ImageButton mDownloadButton;
     private ProgressServiceKeeper mProgressServiceKeeper;
     private NotificationManager mNotificationManager;
     private static ActivityResultLauncher<String> mRequestPermissionLauncher;
@@ -261,6 +265,15 @@ public class LauncherActivity extends BaseActivity {
     public boolean setFullscreen() {
         return true;
     }
+    
+    @Override
+    protected void applyOrientation() {
+        boolean force = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(ThemeManager.PREF_FORCE_LANDSCAPE, ThemeManager.DEFAULT_FORCE_LANDSCAPE);
+        setRequestedOrientation(force
+                ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                : ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -298,22 +311,11 @@ public class LauncherActivity extends BaseActivity {
         ProgressKeeper.addTaskCountListener((mProgressServiceKeeper = new ProgressServiceKeeper(this)));
 
         mSettingsButton.setOnClickListener(mSettingButtonListener);
-        ProgressKeeper.addTaskCountListener(mProgressLayout);
+        mProgressCenter = new ProgressCenter(this, mDownloadButton);
         ExtraCore.addExtraListener(ExtraConstants.BACK_PREFERENCE, mBackPreferenceListener);
         ExtraCore.addExtraListener(ExtraConstants.SELECT_AUTH_METHOD, mSelectAuthMethod);
-
         ExtraCore.addExtraListener(ExtraConstants.LAUNCH_GAME, mLaunchGameListener);
-
         new AsyncVersionList().getVersionList(versions -> ExtraCore.setValue(ExtraConstants.RELEASE_TABLE, versions));
-
-        mProgressLayout.observe(ProgressLayout.DOWNLOAD_GAME);
-        mProgressLayout.observe(ProgressLayout.UNPACK_RUNTIME);
-        mProgressLayout.observe(ProgressLayout.INSTALL_MODPACK);
-        mProgressLayout.observe(ProgressLayout.AUTHENTICATE);
-        mProgressLayout.observe(ProgressLayout.DOWNLOAD_VERSION_LIST);
-        mProgressLayout.observe(ProgressLayout.INSTANCE_INSTALL);
-        mProgressLayout.observe(ProgressLayout.DATA_MIGRATION);
-
         if(launchFromShortcut) {
             mFragmentView.postDelayed(() -> ExtraCore.setValue(ExtraConstants.LAUNCH_GAME, true), SHORTCUT_LAUNCH_DELAY_MS);
         }
@@ -361,8 +363,7 @@ public class LauncherActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(mBackgroundPrefListener);
-        mProgressLayout.cleanUpObservers();
-        ProgressKeeper.removeTaskCountListener(mProgressLayout);
+        mProgressCenter.detach();
         ProgressKeeper.removeTaskCountListener(mProgressServiceKeeper);
         ExtraCore.removeExtraListenerFromValue(ExtraConstants.BACK_PREFERENCE, mBackPreferenceListener);
         ExtraCore.removeExtraListenerFromValue(ExtraConstants.SELECT_AUTH_METHOD, mSelectAuthMethod);
@@ -472,7 +473,7 @@ public class LauncherActivity extends BaseActivity {
     private void bindViews(){
         mFragmentView = findViewById(R.id.container_fragment);
         mSettingsButton = findViewById(R.id.setting_button);
-        mProgressLayout = findViewById(R.id.progress_layout);
+        mDownloadButton = findViewById(R.id.download_button);
         mWallpaper = findViewById(R.id.launcher_wallpaper);
     }
 }

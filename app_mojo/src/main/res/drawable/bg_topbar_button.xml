@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFFFF" />
+        </shape>
+    </item>
+    <!-- Inset the fill by the login-bar line thickness so the purple line stays visible -->
+    <item android:bottom="@dimen/_2sdp">
+        <shape android:shape="rectangle">
+            <solid android:color="?attr/colorSurfaceContainer" />
+        </shape>
+    </item>
+</ripple>

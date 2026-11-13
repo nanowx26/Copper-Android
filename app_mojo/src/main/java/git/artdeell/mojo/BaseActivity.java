@@ -21,11 +21,17 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        applyOrientation();
         super.onCreate(savedInstanceState);
         LocaleUtils.setLocale(this);
-        ThemeManager.applyForcedOrientation(this);
         Tools.setInsetsMode(this, setFullscreen(), shouldIgnoreNotch());
         Tools.getDisplayMetrics(this);
+    }
+
+    /** Runs before the window is created so the first frame already has the right
+     *  orientation. LauncherActivity overrides this to honor the force-landscape toggle. */
+    protected void applyOrientation() {
+        ThemeManager.applyForcedOrientation(this);
     }
 
     /** @return Whether the activity should be set as a fullscreen one */

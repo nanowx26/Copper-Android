@@ -39,6 +39,15 @@
 
     <!-- MCLauncherActivity: Tabs -->
     <string name="mcl_tab_wiki">Wiki</string>
+    
+    <!-- Progress -->
+    <string name="progress_center_title">Downloads &amp; tasks</string>
+    <string name="progress_center_hide">Hide</string>
+    <string name="progress_center_show">Show downloads</string>
+    <plurals name="progress_center_tasks">
+        <item quantity="one">%d task in progress</item>
+        <item quantity="other">%d tasks in progress</item>
+    </plurals>
 
     <!-- MCLauncherActivity: Account status -->
 
