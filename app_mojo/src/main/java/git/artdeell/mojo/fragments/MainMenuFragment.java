@@ -621,7 +621,7 @@ public class MainMenuFragment extends Fragment {
         }
         File gameDirectory = instance.getGameDirectory();
         if(FileUtils.ensureDirectorySilently(gameDirectory)) {
-            openPath(context, gameDirectory, false);
+            FileManagerFragment.open(requireActivity(), gameDirectory);
         }else {
             Toast.makeText(context, R.string.gamedir_open_failed, Toast.LENGTH_LONG).show();
         }
