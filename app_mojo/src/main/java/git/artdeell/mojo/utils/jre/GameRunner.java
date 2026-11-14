@@ -33,6 +33,7 @@ import git.artdeell.mojo.utils.JREUtils;
 import git.artdeell.mojo.utils.JSONUtils;
 import git.artdeell.mojo.utils.MCOptionUtils;
 import git.artdeell.mojo.utils.OldVersionsUtils;
+import git.artdeell.mojo.game.record.GameRecorder;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -335,7 +336,8 @@ public class GameRunner {
                 return;
             }
         }
-
+        
+        GameRecorder.stopBlocking();
         Tools.restartLauncherActivity(activity);
         Tools.fullyExit();
     }

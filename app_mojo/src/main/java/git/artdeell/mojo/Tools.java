@@ -71,6 +71,7 @@ import git.artdeell.mojo.utils.FileUtils;
 import git.artdeell.mojo.utils.GpuUtils;
 import git.artdeell.mojo.value.DependentLibrary;
 import git.artdeell.mojo.value.LibraryArtifact;
+import git.artdeell.mojo.game.record.GameRecorder;
 
 import org.apache.commons.io.IOUtils;
 
@@ -1002,7 +1003,9 @@ public final class Tools {
                 .setMessage(R.string.mcn_exit_confirm)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setPositiveButton(android.R.string.ok, (p1, p2) -> {
+                    
                     try {
+                        GameRecorder.stopBlocking();
                         Tools.restartLauncherActivity(ctx);
                         Tools.fullyExit();
                     } catch (Throwable th) {

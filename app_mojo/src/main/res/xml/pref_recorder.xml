@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:key="">
+
+    <git.artdeell.mojo.prefs.BackButtonPreference />
+
+    <PreferenceCategory
+        android:title="@string/preference_category_recorder">
+
+        <ListPreference
+            android:key="recorder_type"
+            android:title="@string/recorder_type_title"
+            android:summary="%s"
+            android:entries="@array/recorder_type_entries"
+            android:entryValues="@array/recorder_type_values"
+            android:defaultValue="projection" />
+
+        <ListPreference
+            android:key="recorder_quality"
+            android:title="@string/recorder_quality_title"
+            android:summary="%s"
+            android:entries="@array/recorder_quality_entries"
+            android:entryValues="@array/recorder_quality_values"
+            android:defaultValue="720" />
+
+        <ListPreference
+            android:key="recorder_fps"
+            android:title="@string/recorder_fps_title"
+            android:summary="%s"
+            android:entries="@array/recorder_fps_entries"
+            android:entryValues="@array/recorder_fps_values"
+            android:defaultValue="30" />
+
+        <SwitchPreferenceCompat
+            android:key="recorder_include_ui"
+            android:widgetLayout="@layout/preference_widget_material_switch"
+            android:title="@string/recorder_include_ui_title"
+            android:summary="@string/recorder_include_ui_description"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
+            android:key="recorder_save_gallery"
+            android:widgetLayout="@layout/preference_widget_material_switch"
+            android:title="@string/recorder_save_gallery_title"
+            android:summary="@string/recorder_save_gallery_description"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

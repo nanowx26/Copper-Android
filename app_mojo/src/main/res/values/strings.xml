@@ -57,6 +57,59 @@
     <string name="keycode_send">Send</string>
     <string name="keycode_tab_main">Keyboard</string>
     <string name="keycode_tab_extra">Extras &amp; numpad</string>
+    
+    <!-- Recorder -->
+    <string name="recorder_surface_title">Recording surface</string>
+    <string name="recorder_surface_message">This game runs on the default surface, which some devices can\'t capture reliably (blank or broken frames). For reliable recording, enable \"Use alternate surface rendering\" in Video settings and relaunch the game.</string>
+    <string name="recorder_surface_anyway">Record anyway</string>
+    <string name="recorder_capture_failed">Couldn\'t capture game frames with the current renderer settings. Try switching the surface rendering or the MobileGlues ANGLE option, then record again.</string>
+    <string name="preference_category_recorder">Recorder</string>
+    <string name="preference_recorder_title">Screen recorder</string>
+    <string name="preference_recorder_description">Resolution, frame rate and where recordings are saved</string>
+    <string name="recorder_quality_title">Resolution</string>
+    <string name="recorder_fps_title">Frame rate</string>
+    <string name="recorder_save_gallery_title">Save to gallery</string>
+    <string name="recorder_save_gallery_description">Off: recordings stay in the launcher\'s own recordings folder</string>
+    <string name="recorder_started">Recording started</string>
+    <string name="recorder_stopped">Recording saved</string>
+    <string name="recorder_failed">Recording failed</string>
+    <string name="recorder_unsupported">The recorder needs Android 8 or newer</string>
+    <string name="recorder_saved_gallery">Recording saved to the gallery</string>
+    <string name="recorder_saved_private">Gallery save failed, kept in the recordings folder</string>
+    <string name="menu_ingame_record">Screen recorder</string>
+    <string name="recorder_type_title">Recorder type</string>
+    <string name="recorder_include_ui_title">Show in-game controls</string>
+    <string name="recorder_include_ui_description">In-app capture only: include the launcher\'s on-screen controls and menus in the recording. Off records just the game surface.</string>
+    <string name="recorder_experimental_title">Experimental capture</string>
+    <string name="recorder_experimental_message">In-app capture reads the game\'s own frames without Android\'s screen-capture permission. It is experimental: on some devices or GPUs the game layer may come out black or blank. If recordings look wrong, switch back to screen capture.</string>
+    <string name="recorder_running">Recording screen</string>
+    <string name="recorder_stop_action">Stop</string>
+    <string-array name="recorder_type_entries">
+        <item>Screen capture (Android permission)</item>
+        <item>In-app capture (experimental)</item>
+    </string-array>
+    <string-array name="recorder_type_values">
+        <item>projection</item>
+        <item>internal</item>
+    </string-array>
+    <string-array name="recorder_quality_entries">
+        <item>480p</item>
+        <item>720p</item>
+        <item>1080p</item>
+    </string-array>
+    <string-array name="recorder_quality_values">
+        <item>480</item>
+        <item>720</item>
+        <item>1080</item>
+    </string-array>
+    <string-array name="recorder_fps_entries">
+        <item>30 FPS</item>
+        <item>60 FPS</item>
+    </string-array>
+    <string-array name="recorder_fps_values">
+        <item>30</item>
+        <item>60</item>
+    </string-array>
 
     <!-- Toast messages -->
     <string name="toast_permission_denied">The read/write to storage permission is required!</string>

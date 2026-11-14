@@ -11,6 +11,9 @@ import static git.artdeell.mojo.prefs.LauncherPreferences.PREF_ZINK_PREFER_SYSTE
 
 import android.app.Activity;
 import androidx.appcompat.app.AlertDialog;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.preference.PreferenceManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -29,11 +32,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.WindowManager;
+import android.view.SurfaceView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.media.projection.MediaProjectionManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -77,6 +82,7 @@ import git.artdeell.mojo.authenticator.accounts.Account;
 import git.artdeell.mojo.game.renderer.impl.GLESRenderSpec;
 import git.artdeell.mojo.utils.jre.GameRunner;
 import git.artdeell.mojo.dialogs.SendKeycodeDialog;
+import git.artdeell.mojo.game.record.GameRecorder;
 
 import java.io.File;
 import java.io.IOException;
@@ -258,7 +264,7 @@ public class GameActivity extends BaseActivity implements ControlButtonMenuListe
                     getResources().getStringArray(R.array.menu_ingame),
                     new int[]{R.drawable.ic_drawer_power, R.drawable.ic_drawer_log,
                             R.drawable.ic_drawer_keyboard, R.drawable.ic_settings,
-                            R.drawable.ic_drawer_gamepad});
+                            R.drawable.ic_drawer_gamepad, R.drawable.ic_px_record});
             gameActionClickListener = (parent, view, position, id) -> {
                 switch(position) {
                      case 0: dialogForceClose(GameActivity.this); break;
@@ -266,6 +272,7 @@ public class GameActivity extends BaseActivity implements ControlButtonMenuListe
                      case 2: dialogSendCustomKey(); break;
                      case 3: openQuickSettings(); break;
                      case 4: openCustomControls(); break;
+                     case 5: toggleRecorder(); break;
                 }
                 drawerLayout.closeDrawers();
             };
@@ -372,6 +379,7 @@ public class GameActivity extends BaseActivity implements ControlButtonMenuListe
     protected void onDestroy() {
         super.onDestroy();
         ContextExecutor.clearActivity();
+        GameRecorder.stopBlocking();
         FileDialogBridge.cancelAll();
     }
 
@@ -501,6 +509,30 @@ public class GameActivity extends BaseActivity implements ControlButtonMenuListe
                 break;
         }
         if(toastString != 0) Toast.makeText(ctx, toastString, Toast.LENGTH_SHORT).show();
+    }
+    
+    private final ActivityResultLauncher<Intent> mRecordConsentLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                    GameRecorder.startProjection(this, result.getResultCode(), result.getData());
+                }
+            });
+
+    private void toggleRecorder() {
+        if (GameRecorder.isRecording()) {
+            GameRecorder.stop();
+            return;
+        }
+        if (GameRecorder.isProjectionType(this)) {
+            MediaProjectionManager manager =
+                    (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+            if (manager != null) mRecordConsentLauncher.launch(manager.createScreenCaptureIntent());
+            return;
+        }
+        if (launcherGLView == null || launcherGLView.mSurface == null) return;
+        final View surface = launcherGLView.mSurface;
+        // Let the drawer finish closing so the capture probe doesn't sample it
+        launcherGLView.postDelayed(() -> GameRecorder.startInternal(this, surface), 500);
     }
 
     @Override
