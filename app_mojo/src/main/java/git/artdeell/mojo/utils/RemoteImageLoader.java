@@ -43,7 +43,7 @@ public final class RemoteImageLoader {
     private static final int CONNECT_TIMEOUT_MS = 10_000;
     private static final int READ_TIMEOUT_MS = 20_000;
     private static final String USER_AGENT =
-            "CopperLauncher/Copper-Android (https://github.com/CopperLauncher/Copper-Android)";
+            "CubicLauncher/Cubic-Android (https://github.com/CubicLauncher/Cubic-Android)";
 
     private static final LruCache<String, Bitmap> sCache =
             new LruCache<String, Bitmap>((int) (Runtime.getRuntime().maxMemory() / 1024 / 10)) {

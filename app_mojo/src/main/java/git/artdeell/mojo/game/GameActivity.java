@@ -48,7 +48,6 @@ import git.artdeell.mojo.BaseActivity;
 import git.artdeell.mojo.CallbackBridge;
 import git.artdeell.mojo.game.renderer.GameRenderer;
 import git.artdeell.mojo.utils.GpuUtils;
-import git.artdeell.mojo.utils.KeycodeUtils;
 import git.artdeell.mojo.Logger;
 import git.artdeell.mojo.Tools;
 import git.artdeell.mojo.authenticator.accounts.Accounts;
@@ -77,6 +76,7 @@ import git.artdeell.mojo.utils.MCOptionUtils;
 import git.artdeell.mojo.authenticator.accounts.Account;
 import git.artdeell.mojo.game.renderer.impl.GLESRenderSpec;
 import git.artdeell.mojo.utils.jre.GameRunner;
+import git.artdeell.mojo.dialogs.SendKeycodeDialog;
 
 import java.io.File;
 import java.io.IOException;
@@ -437,10 +437,7 @@ public class GameActivity extends BaseActivity implements ControlButtonMenuListe
     }
 
     private void dialogSendCustomKey() {
-        AlertDialog.Builder dialog = new MaterialAlertDialogBuilder(this);
-        dialog.setTitle(R.string.control_customkey);
-        dialog.setItems(KeycodeUtils.generateKeyName(), (dInterface, position) -> KeycodeUtils.execKeyIndex(position));
-        dialog.show();
+        SendKeycodeDialog.show(this);
     }
 
     boolean isInEditor;

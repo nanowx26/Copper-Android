@@ -25,6 +25,6 @@ class MobileGluesAboutFragment : LauncherPreferenceFragment() {
     private companion object {
         const val RELEASE_URL = "https://github.com/MobileGL-Dev/MobileGlues-release"
         const val RENDERER_URL = "https://github.com/MobileGL-Dev/MobileGlues"
-        const val CREDITS_URL = "https://github.com/CopperLauncher/Copper-Info/blob/main/Mobile-Glues-Credits.md"
+        const val CREDITS_URL = "https://github.com/CubicLauncher/Cubic-Info/blob/main/Mobile-Glues-Credits.md"
     }
 }

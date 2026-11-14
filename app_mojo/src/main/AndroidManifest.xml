@@ -88,14 +88,14 @@
         <activity
             android:name=".FatalErrorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
-            android:theme="@style/Theme.Copper.Dialog" />
+            android:theme="@style/Theme.Cubic.Dialog" />
         <activity android:name=".ShowErrorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
-            android:theme="@style/Theme.Copper.Dialog" />
+            android:theme="@style/Theme.Cubic.Dialog" />
         <activity
             android:name=".ExitActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
-            android:theme="@style/Theme.Copper.Dialog" />
+            android:theme="@style/Theme.Cubic.Dialog" />
         <activity
             android:process=":gui_installer"
             android:name=".awt.AWTActivity"

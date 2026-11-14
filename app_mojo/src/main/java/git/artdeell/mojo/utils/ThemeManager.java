@@ -21,7 +21,7 @@ import git.artdeell.mojo.R;
  * Applies the user's theme mode (system / light / dark) and color source:
  * <ul>
  *     <li>dynamic: Material You wallpaper colors, Android 12+ only</li>
- *     <li>default: the static Copper palette</li>
+ *     <li>default: the static Cubic palette</li>
  *     <li>custom: a Material 3 palette generated from a user picked color, works on every Android version</li>
  * </ul>
  * The custom palettes are pre-generated theme overlays, one for each 10 degrees of HCT hue.

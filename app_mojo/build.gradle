@@ -79,7 +79,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.maxjubayeryt.copper"
+        applicationId "com.nwx.cubiclauncher"
         minSdkVersion 23
         targetSdkVersion 36
         versionCode getDateSeconds()
@@ -109,8 +109,8 @@ android {
             shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.customDebug
-            resValue 'string', 'application_package', 'com.maxjubayeryt.copper.debug'
-            resValue 'string', 'storageProviderAuthorities', 'com.maxjubayeryt.copper.scoped.gamefolder.debug'
+            resValue 'string', 'application_package', 'com.maxjubayeryt.cubic.debug'
+            resValue 'string', 'storageProviderAuthorities', 'com.maxjubayeryt.cubic.scoped.gamefolder.debug'
         }
         proguard {
             initWith debug
@@ -130,8 +130,8 @@ android {
             // defaultConfig already set
             // multiDexEnabled = true
             // debuggable = true
-            resValue 'string', 'storageProviderAuthorities', 'com.maxjubayeryt.copper.scoped.gamefolder'
-            resValue 'string', 'application_package', 'com.maxjubayeryt.copper'
+            resValue 'string', 'storageProviderAuthorities', 'com.maxjubayeryt.cubic.scoped.gamefolder'
+            resValue 'string', 'application_package', 'com.maxjubayeryt.cubic'
         }
         gplay {
             initWith release

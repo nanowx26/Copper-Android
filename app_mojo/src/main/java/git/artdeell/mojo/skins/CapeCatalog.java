@@ -41,7 +41,7 @@ public final class CapeCatalog {
     public static final String ID_PREFIX = "mc:";
     private static final String TEXTURE_URL = "https://textures.minecraft.net/texture/";
     private static final String WIKI_API = "https://minecraft.wiki/api.php";
-    private static final String USER_AGENT = "CopperLauncher (https://github.com/CopperLauncher/Copper-Android)";
+    private static final String USER_AGENT = "CubicLauncher (https://github.com/CubicLauncher/Cubic-Android)";
     private static final long CATALOG_MAX_AGE_MS = 7L * 24 * 60 * 60 * 1000;
     private static final int WIKI_BATCH = 20;
     private static final Pattern HASH = Pattern.compile("(?<![0-9a-fA-F])[0-9a-f]{64}(?![0-9a-fA-F])");
@@ -71,7 +71,7 @@ public final class CapeCatalog {
             new Item("Purple Heart", "cb40a92e32b57fd732a00fc325e7afb00a7ca74936ad50d8e860152e482cfbde"),
             new Item("Pan Cape", "28de4a81688ad18b49e735a273e086c18f1e3966956123ccb574034c06f5d336"),
             new Item("Common Cape", "5ec930cdd2629c8771655c60eebeb867b4b6559b0e6d3bc71c40c96347fa03f0"),
-            new Item("Copper Cape", "5e6f3193e74cd16cdd6637d9bae5484e3a37ff2a14c2d157c659a07810b1bdca"),
+            new Item("Cubic Cape", "5e6f3193e74cd16cdd6637d9bae5484e3a37ff2a14c2d157c659a07810b1bdca"),
             new Item("Menace Cape", "dbc21e222528e30dc88445314f7be6ff12d3aeebc3c192054fba7e3b3f8c77b1"),
             new Item("Mojang Classic", "10f135ef7010f36f6f9661e479a9539d91f4a43b2f279f1311b5e39d5b035133"),
             new Item("Mojang Studios", "8f9024f2e51f893114d24a0d93dd1c0ba0a0f828a2a86ef7842c0c7a523a676a"),
